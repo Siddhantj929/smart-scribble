@@ -49,10 +49,40 @@ router.get("/", auth, async (req, res) => {
 			user: req.user._id,
 			isActive: true
 		});
-		if (scribbles.length > 0) {
+
+		// Checking if 3 tasks are there
+		if (scribbles.length === 3) {
 			status = 200;
 			message = "Scribbles successfully found.";
 			payload = { scribbles };
+
+			// Activating new scribble in list
+		} else {
+			const activeTags = [];
+
+			scribbles.forEach(s => activeTags.push(...s.tags));
+
+			const inactiveScribbles = await Scribbles.find(
+				{
+					user: req.user._id,
+					isActive: false,
+					isComplete: false,
+					tags: { $nin: activeTags }
+				},
+				{ sort: "-date" }
+			);
+
+			let scribble;
+
+			if (inactiveScribbles.length > 0) {
+				scribble = inactiveScribbles[0];
+				scribble.isActive = true;
+				await scribble.save();
+			}
+
+			status = 200;
+			message = "Scribbles successfully found.";
+			payload = { scribbles: [...activeScribbles, scribble] };
 		}
 	} catch (err) {
 		console.error(err);
@@ -75,6 +105,31 @@ router.get("/:id/scribbles", auth, async (req, res) => {
 			message = "Scribbles successfully found.";
 			payload = { scribbles };
 		}
+	} catch (err) {
+		console.error(err);
+		if (process.env.NODE_ENV === "DEBUG") message = err.message;
+	}
+
+	res.status(status).send({ message, payload });
+});
+
+// Update Scribbles status
+router.put("/:id", async (req, res) => {
+	let message = "Operation failed due to improper data.";
+	let payload = null;
+	let status = 400;
+
+	try {
+		const { isComplete, isActive } = req.body;
+
+		// Updating current scribbles
+		await Scribbles.findByIdAndUpdate(req.params.id, {
+			isComplete,
+			isActive
+		});
+
+		message = "Scribble successfully updated.";
+		status = 200;
 	} catch (err) {
 		console.error(err);
 		if (process.env.NODE_ENV === "DEBUG") message = err.message;
