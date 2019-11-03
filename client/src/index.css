@@ -1,13 +1,43 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+body,
+html,
+.App {
+	height: 100%;
+}
+
+.SignForm {
+	min-width: 100vw;
+	min-height: 100vh;
+}
+
+.SignForm .container {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.SignForm img {
+	height: 20vh;
+	margin-bottom: 2rem;
+}
+
+.SignForm .card {
+	width: 100%;
+	max-width: 500px;
+	border: 0;
+	box-shadow: 0 0.25rem 1rem rgba(48, 55, 66, 0.15);
+}
+
+.SignForm .card-body {
+	padding-bottom: 0.8rem;
+}
+
+.SignForm .card-footer .btn {
+	margin-right: 0.8rem;
 }

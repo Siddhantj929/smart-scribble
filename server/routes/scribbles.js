@@ -114,22 +114,26 @@ router.get("/:id/scribbles", auth, async (req, res) => {
 });
 
 // Update Scribbles status
-router.put("/:id", async (req, res) => {
+router.put("/", async (req, res) => {
 	let message = "Operation failed due to improper data.";
 	let payload = null;
 	let status = 400;
 
 	try {
-		const { isComplete, isActive } = req.body;
-
-		// Updating current scribbles
-		await Scribbles.findByIdAndUpdate(req.params.id, {
-			isComplete,
-			isActive
+		const scribbles = await Scribbles.find({
+			_id: { $in: req.body.scribbles }
 		});
 
-		message = "Scribble successfully updated.";
+		// Updating current scribbles
+		scribbles.forEach(async s => {
+			s.isActive = false;
+			s.isComplete = true;
+			await s.save();
+		});
+
+		message = "Scribbles successfully updated.";
 		status = 200;
+		payload = { scribbles };
 	} catch (err) {
 		console.error(err);
 		if (process.env.NODE_ENV === "DEBUG") message = err.message;
